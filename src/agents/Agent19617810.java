@@ -2,25 +2,41 @@ package agents;
 import loveletter.*;
 import java.util.Random;
 
+
+class AleatoricPolicy{
+
+  //recursive data structure for representing an aleatoric formula
+  //has static methods for mutation and crossover.
+  //has static methods for selection (tournament?)
+  //Types are properties (aleatoric)
+  //or ite combinations
+  //Properties are enumerations? wtf not. 
+
+}
+
+
+
+
+
 /**
  * An interface for representing an agent in the game Love Letter
  * All agent's must have a 0 parameter constructor
  * */
-public class BorkedAgent implements Agent{
+public class Agent19617810 implements Agent{
 
   private Random rand;
   private State current;
   private int myIndex;
 
   //0 place default constructor
-  public BorkedAgent(){
+  public Agent19617810(){
     rand  = new Random();
   }
 
   /**
    * Reports the agents name
    * */
-  public String toString(){return "Bork";}
+  public String toString(){return "Aleator";}
 
 
   /**
@@ -50,8 +66,7 @@ public class BorkedAgent implements Agent{
   public Action playCard(Card c){
     Action act = null;
     Card play;
-    boolean legal=false;
-    while(!legal){
+    while(!current.legalAction(act, c)){
       if(rand.nextDouble()<0.5) play= c;
       else play = current.getCard(myIndex);
       int target = rand.nextInt(current.numPlayers());
@@ -79,10 +94,9 @@ public class BorkedAgent implements Agent{
             act = Action.playCountess(myIndex);
             break;
           default:
-            act = Action.playPrincess(myIndex);
+            act = null;//never play princess
         }
-        legal=true;
-      }catch(IllegalActionException e){/*do nothing, just try again*/}  
+      }catch(IllegalActionException e){/*do nothing*/}
     }
     return act;
   }
