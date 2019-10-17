@@ -53,9 +53,9 @@ public class LoveLetter{
           agents[i].newRound(playerStates[i]);
         }
         while(!gameState.roundOver()){
-System.out.println("Cards are:\nplayer 0:"+gameState.getCard(0)+"\nplayer 1:"+gameState.getCard(1)+"\nplayer 2:"+gameState.getCard(2)+"\nplayer 3:"+gameState.getCard(3));        
+          System.out.println("Cards are:\nplayer 0:"+gameState.getCard(0)+"\nplayer 1:"+gameState.getCard(1)+"\nplayer 2:"+gameState.getCard(2)+"\nplayer 3:"+gameState.getCard(3));        
           Card topCard = gameState.drawCard(); 
-System.out.println("Player "+gameState.nextPlayer()+" draws the "+topCard);
+          System.out.println("Player "+gameState.nextPlayer()+" draws the "+topCard);
           Action act = agents[gameState.nextPlayer()].playCard(topCard);
           try{
             ps.println(gameState.update(act,topCard));
@@ -70,7 +70,7 @@ System.out.println("Player "+gameState.nextPlayer()+" draws the "+topCard);
           for(int p = 0; p<numPlayers; p++)
             agents[p].see(act,playerStates[p]);
         }
-System.out.println("New Round, scores are:\nplayer 0:"+gameState.score(0)+"\nplayer 1:"+gameState.score(1)+"\nplayer 2:"+gameState.score(2)+"\nplayer 3:"+gameState.score(3));        
+        System.out.println("New Round, scores are:\nplayer 0:"+gameState.score(0)+"\nplayer 1:"+gameState.score(1)+"\nplayer 2:"+gameState.score(2)+"\nplayer 3:"+gameState.score(3));        
         gameState.newRound();
       }
       ps.println("Player "+gameState.gameWinner()+" wins the Princess's heart!");
@@ -89,7 +89,7 @@ System.out.println("New Round, scores are:\nplayer 0:"+gameState.score(0)+"\npla
    * The agent implementations should be in the default package.
    * */
   public static void main(String[] args){
-    Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.BorkedAgent(), new agents.BorkedAgent()};
+    Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.SimpleReflexAgent(), new agents.SimpleReflexAgent()};
     LoveLetter env = new LoveLetter();
     StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
     int[] results = env.playGame(agents);

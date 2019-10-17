@@ -20,7 +20,7 @@ public class RandomAgent implements Agent{
   /**
    * Reports the agents name
    * */
-  public String toString(){return "Rando";}
+  public String toString(){return "Random";}
 
 
   /**
