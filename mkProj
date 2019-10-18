@@ -1,5 +1,8 @@
 #simple buildscript for the project
 #compile all files
+echo 'removing old compiled files'
+rm -R bin/agents
+rm -R bin/loveletter
 echo 'compiling files'
 javac -d bin src/*/*.java
 #run test

@@ -13,6 +13,10 @@ public class LoveLetter{
   private Agent rando;
   private Random random;
   private PrintStream ps;
+  // for testing purposes
+  private static int[] playerWins = new int[4];
+  private static boolean testing = true;
+  private static int numRounds = 10000;
 
   /**
    * Constructs a LoveLetter game.
@@ -53,12 +57,20 @@ public class LoveLetter{
           agents[i].newRound(playerStates[i]);
         }
         while(!gameState.roundOver()){
-          System.out.println("Cards are:\nplayer 0:"+gameState.getCard(0)+"\nplayer 1:"+gameState.getCard(1)+"\nplayer 2:"+gameState.getCard(2)+"\nplayer 3:"+gameState.getCard(3));        
+          if(!testing) {
+            System.out.println("Cards are:\nplayer 0:"+gameState.getCard(0)+"\nplayer 1:"+gameState.getCard(1)+"\nplayer 2:"+gameState.getCard(2)+"\nplayer 3:"+gameState.getCard(3));
+          }       
           Card topCard = gameState.drawCard(); 
-          System.out.println("Player "+gameState.nextPlayer()+" draws the "+topCard);
+          if(!testing) {
+            System.out.println("Player "+gameState.nextPlayer()+" draws the "+topCard);
+          }
           Action act = agents[gameState.nextPlayer()].playCard(topCard);
           try{
-            ps.println(gameState.update(act,topCard));
+            if(testing) {
+              gameState.update(act,topCard);
+            } else {
+              ps.println(gameState.update(act,topCard));
+            }
           }
           catch(IllegalActionException e){
             ps.println("ILLEGAL ACTION PERFORMED BY PLAYER "+agents[gameState.nextPlayer()]+
@@ -70,10 +82,15 @@ public class LoveLetter{
           for(int p = 0; p<numPlayers; p++)
             agents[p].see(act,playerStates[p]);
         }
-        System.out.println("New Round, scores are:\nplayer 0:"+gameState.score(0)+"\nplayer 1:"+gameState.score(1)+"\nplayer 2:"+gameState.score(2)+"\nplayer 3:"+gameState.score(3));        
+        if(!testing) {
+          System.out.println("New Round, scores are:\nplayer 0:"+gameState.score(0)+"\nplayer 1:"+gameState.score(1)+"\nplayer 2:"+gameState.score(2)+"\nplayer 3:"+gameState.score(3));
+        }        
         gameState.newRound();
       }
-      ps.println("Player "+gameState.gameWinner()+" wins the Princess's heart!");
+      playerWins[gameState.gameWinner()]++;
+      if(!testing) {
+        ps.println("Player "+gameState.gameWinner()+" wins the Princess's heart!");
+      }
       int[] scoreboard = new int[numPlayers];
       for(int p = 0; p<numPlayers; p++)scoreboard[p] = gameState.score(p);
       return scoreboard;
@@ -89,13 +106,31 @@ public class LoveLetter{
    * The agent implementations should be in the default package.
    * */
   public static void main(String[] args){
-    Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.SimpleReflexAgent(), new agents.SimpleReflexAgent()};
-    LoveLetter env = new LoveLetter();
-    StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
-    int[] results = env.playGame(agents);
-    env.ps.print("The final scores are:\n");
-    for(int i= 0; i<agents.length; i++)
-      env.ps.print("\t Agent "+i+", \""+agents[i]+"\":\t "+results[i]+"\n");
+    // to run a larger test
+    if(testing) {
+      for(int i=0; i<numRounds; i++) {
+        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.SimpleReflexAgent(), new agents.SimpleReflexAgent()};
+        LoveLetter env = new LoveLetter();
+        env.playGame(agents);
+      }
+      int totalWins = (playerWins[0] + playerWins[1] + playerWins[2] + playerWins[3]);
+      System.out.println("\tAgent "+0+", ("+"Random):\t\t"+playerWins[0]+" out of "+totalWins);
+      System.out.println("\tAgent "+1+", ("+"Random):\t\t"+playerWins[1]+" out of "+totalWins);
+      System.out.println("\tAgent "+2+", ("+"Simple Reflex):\t"+playerWins[2]+" out of "+totalWins);
+      System.out.println("\tAgent "+3+", ("+"Simple Reflex):\t"+playerWins[3]+" out of "+totalWins);
+      float randomTotal = (float) (playerWins[0] + playerWins[1]) / numRounds * 100;
+      System.out.println("Random win %:\t\t" + randomTotal);
+      float agentTotal = (float) (playerWins[2] + playerWins[2]) / numRounds * 100;
+      System.out.println("Simple Reflex win %:\t" + agentTotal);
+    } else {
+      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.SimpleReflexAgent(), new agents.SimpleReflexAgent()};
+      LoveLetter env = new LoveLetter();
+      StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
+      int[] results = env.playGame(agents);
+      env.ps.print("The final scores are:\n");
+      for(int i= 0; i<agents.length; i++)
+        env.ps.print("\t Agent "+i+", \""+agents[i]+"\":\t "+results[i]+"\n");
+    }
   }
 }
 
