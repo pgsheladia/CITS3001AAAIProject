@@ -15,7 +15,7 @@ public class LoveLetter{
   private PrintStream ps;
   // for testing purposes
   private static int[] playerWins = new int[4];
-  private static boolean testing = true;
+  private static boolean testing = false;
   private static int numRounds = 10000;
 
   /**
@@ -109,7 +109,7 @@ public class LoveLetter{
     // to run a larger test
     if(testing) {
       for(int i=0; i<numRounds; i++) {
-        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.SimpleReflexAgent(), new agents.SimpleReflexAgent()};
+        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.BetterAgent(), new agents.BetterAgent()};
         LoveLetter env = new LoveLetter();
         env.playGame(agents);
       }
@@ -123,7 +123,7 @@ public class LoveLetter{
       float agentTotal = (float) (playerWins[2] + playerWins[3]) / numRounds * 100;
       System.out.println("Simple Reflex win %:\t" + agentTotal);
     } else {
-      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.SimpleReflexAgent(), new agents.SimpleReflexAgent()};
+      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.BetterAgent(), new agents.BetterAgent()};
       LoveLetter env = new LoveLetter();
       StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
       int[] results = env.playGame(agents);
