@@ -53,10 +53,9 @@ public class BetterAgent implements Agent {
         // int noTarget = -1; // stores the player which should not be targeted
         Card guess = null; // for Guard action
         Card inHand = current.getCard(myIndex); // the current card
-        int num = current.numPlayers(); // number of players in the game
 
         // if we know someone's card, store it for later use
-        for(int i=0; i<num; i++) {
+        for(int i=0; i<current.numPlayers(); i++) {
             if(i != myIndex && !current.eliminated(i) && !current.handmaid(i) && current.getCard(i) != null) {
                 target = i;
                 guess = current.getCard(i);
@@ -64,19 +63,45 @@ public class BetterAgent implements Agent {
             }
         }
 
-        // If we have Prince or King and Countess, we must play Countess
-        if((inHand == Card.PRINCE || inHand == Card.KING) && c == Card.COUNTESS) {
-            try {
-                System.out.println("~~~~~~~ Played Countess (bc Prince or King also in hand) ~~~~~~~");
-                act = Action.playCountess(myIndex);
-            } catch(IllegalActionException e) {}
+        act = playCompulsoryCard(c, inHand);
+        if(act != null) {
+            return act;
         }
-        else if((c == Card.PRINCE || c == Card.KING) && inHand == Card.COUNTESS) {
-            try {
-                System.out.println("~~~~~~~ Played Countess (bc Prince or King also in hand) ~~~~~~~");
-                act = Action.playCountess(myIndex);
-            } catch(IllegalActionException e) {}
-        } else if(inHand == Card.GUARD || c == Card.GUARD) { // if we have a guard
+        act = playGuardCard(c, inHand, guess, target);
+        if(act != null) {
+            return act;
+        }
+        act = playPriestCard(c, inHand);
+        if(act != null) {
+            return act;
+        }
+        act = playBaronCard(c, inHand, guess, target);
+        if(act != null) {
+            return act;
+        }
+        act = playHandmaidCard(c, inHand);
+        if(act != null) {
+            return act;
+        }
+        act = playPrinceCard(c, inHand, guess, target);
+        if(act != null) {
+            return act;
+        }
+        act = playKingCard(c, inHand);
+        if(act != null) {
+            return act;
+        }
+        act = playCountessCard(c, inHand);
+        if(act != null) {
+            return act;
+        }
+        // do nothing for the Princess
+        return act;
+    }
+
+    public Action playGuardCard(Card c, Card inHand, Card guess, int target) {
+        Action act = null;
+        if(inHand == Card.GUARD || c == Card.GUARD) { // if we have a guard
             if(guess != null && guess != Card.GUARD) { // if we know their non-Guard card
                 try {
                     System.out.println("~~~~~~~ Played Guard bc we know a player's card: target-"+target+" guess: "+guess.toString()+" ~~~~~~~");
@@ -93,14 +118,26 @@ public class BetterAgent implements Agent {
                     act = Action.playGuard(myIndex, target, Card.values()[maxCard]);
                 } catch(IllegalActionException e) {}
             }
-        } else if(inHand == Card.PRIEST || c == Card.PRIEST) {
+        }
+        return act;
+    }
+
+    public Action playPriestCard(Card c, Card inHand) {
+        Action act = null;
+        if(inHand == Card.PRIEST || c == Card.PRIEST) {
             // choose the player with the highest score
-            target = getHighScorePlayer();
+            int target = getHighScorePlayer();
             try {
                 System.out.println("~~~~~~~ Played Priest and chose high scoring target: target-"+target+" ~~~~~~~");
                 act = Action.playPriest(myIndex, target);
             } catch(IllegalActionException e) {}
-        } else if(inHand == Card.BARON || c == Card.BARON) {
+        }
+        return act;
+    }
+
+    public Action playBaronCard(Card c, Card inHand, Card guess, int target) {
+        Action act = null;
+        if(inHand == Card.BARON || c == Card.BARON) {
             if(guess != null) { // if we know a card
                 if(inHand == Card.BARON && guess.value() < c.value()) { // if known card has smaller value than our card
                     try {
@@ -113,19 +150,58 @@ public class BetterAgent implements Agent {
                         act = Action.playBaron(myIndex, target);
                     } catch(IllegalActionException e) {}
                 } else { // the known card has higher value
+                    if(playersLeft() == 2) { // one other player, therefore play the other card if possible
+                        System.out.println("~~~~~~~ One other player left, playing card other than Baron ~~~~~~~");
+                        act = playGuardCard(c, inHand, guess, target);
+                        if(act != null) {
+                            return act;
+                        }
+                        act = playPriestCard(c, inHand);
+                        if(act != null) {
+                            return act;
+                        }
+                        act = playHandmaidCard(c, inHand);
+                        if(act != null) {
+                            return act;
+                        }
+                        act = playPrinceCard(c, inHand, guess, target);
+                        if(act != null) {
+                            return act;
+                        }
+                        act = playKingCard(c, inHand);
+                        if(act != null) {
+                            return act;
+                        }
+                        act = playCountessCard(c, inHand);
+                        if(act != null) {
+                            return act;
+                        }
+                        // else we lose the round either way as the other card must be Princess or Baron
+                    }
                     System.out.println("~~~~~~~ Played Baron, target a random person ~~~~~~~");
                     act = playRandom(c, Card.values()[2], -1);
-                    // TODO: if only one player left, who has a higher valued card, then don't play BARON > instead play the other card
                 }
             } else {
                 System.out.println("~~~~~~~ Played Baron, target a random person ~~~~~~~");
                 act = playRandom(c, Card.values()[2], -1);
             }
-        } else if(inHand == Card.HANDMAID || c == Card.HANDMAID) {
+        }
+        return act;
+    }
+
+    public Action playHandmaidCard(Card c, Card inHand) {
+        Action act = null;
+        if(inHand == Card.HANDMAID || c == Card.HANDMAID) {
             try {
                 act = Action.playHandmaid(myIndex);
             } catch(IllegalActionException e) {}
-        } else if(inHand == Card.PRINCE || c == Card.PRINCE) {
+        }
+        return act;
+    }
+
+    public Action playPrinceCard(Card c, Card inHand, Card guess, int target) {
+        Action act = null;
+        if(inHand == Card.PRINCE || c == Card.PRINCE) {
             if(guess != null && guess == Card.PRINCESS) { // if we know that a player has a princess
                 try {
                     System.out.println("~~~~~~~ Played Prince and chose target with already known Princess card: target-"+target+" ~~~~~~~");
@@ -140,17 +216,45 @@ public class BetterAgent implements Agent {
                     act = playRandom(c, Card.values()[4], -1);
                 }
             }
-        } else if(inHand == Card.KING || c == Card.KING) {
+        }
+        return act;
+    }
+
+    public Action playKingCard(Card c, Card inHand) {
+        Action act = null;
+        if(inHand == Card.KING || c == Card.KING) {
             System.out.println("~~~~~~~ Played King, target a random person ~~~~~~~");
             act = playRandom(c, Card.values()[5], -1);
-        } else if(inHand == Card.COUNTESS || c == Card.COUNTESS) {
+        }
+        return act;
+    }
+
+    public Action playCountessCard(Card c, Card inHand) {
+        Action act = null;
+        if(inHand == Card.COUNTESS || c == Card.COUNTESS) {
             // if the programs gets to this statement, we have to play Countess as the other card must be Princess
             try {
                 System.out.println("~~~~~~~ Played Countess bc the other card is Princess ~~~~~~~");
                 act = Action.playCountess(myIndex);
             } catch(IllegalActionException e) {}
-        } else {
-            // do nothing for the Princess
+        }
+        return act;
+    }
+
+    public Action playCompulsoryCard(Card c, Card inHand) {
+        Action act = null;
+        // If we have Prince or King and Countess, we must play Countess
+        if((inHand == Card.PRINCE || inHand == Card.KING) && c == Card.COUNTESS) {
+            try {
+                System.out.println("~~~~~~~ Played Countess (bc Prince or King also in hand) ~~~~~~~");
+                act = Action.playCountess(myIndex);
+            } catch(IllegalActionException e) {}
+        }
+        else if((c == Card.PRINCE || c == Card.KING) && inHand == Card.COUNTESS) {
+            try {
+                System.out.println("~~~~~~~ Played Countess (bc Prince or King also in hand) ~~~~~~~");
+                act = Action.playCountess(myIndex);
+            } catch(IllegalActionException e) {}
         }
         return act;
     }
