@@ -57,7 +57,7 @@ public class BetterAgent implements Agent {
 
         // if we know someone's card, store it for later use
         for(int i=0; i<num; i++) {
-            if(i != myIndex && !current.eliminated(i) && current.getCard(i) != null) {
+            if(i != myIndex && !current.eliminated(i) && !current.handmaid(i) && current.getCard(i) != null) {
                 target = i;
                 guess = current.getCard(i);
                 break;
@@ -182,7 +182,7 @@ public class BetterAgent implements Agent {
                 while(target == noTarget) { // hence choose another player
                     target = rand.nextInt(current.numPlayers());
                     System.out.println("~~~~~~~ New random: "+target+" ~~~~~~~");
-                    if(count == 50 && play == Card.BARON) { // to stop the from being stuck in this while loop
+                    if(count == 50 && play == Card.BARON) { // to stop the program from being stuck in this while loop
                         target = noTarget;
                         break;
                     }
