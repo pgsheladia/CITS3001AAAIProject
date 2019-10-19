@@ -45,7 +45,6 @@ public class BetterAgent implements Agent {
      * Perform an action after drawing a card from the deck
      * @param c the card drawn from the deck
      * @return the action the agent chooses to perform
-     * @throws IllegalActionException when the Action produced is not legal.
      * */
     public Action playCard(Card c) {
         Action act = null;
@@ -99,6 +98,14 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform Guard action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @param guess the known card of a player
+     * @param target the player whose card we know
+     * @return the action the agent chooses to perform
+     * */
     public Action playGuardCard(Card c, Card inHand, Card guess, int target) {
         Action act = null;
         if(inHand == Card.GUARD || c == Card.GUARD) { // if we have a guard
@@ -110,7 +117,7 @@ public class BetterAgent implements Agent {
             } else {
                 // choose the player with highest score and the card with higher chances of them having it
                 int[] remainingCards = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
-                remainingCards = getUnseenCards(c, inHand);
+                remainingCards = getUnseenCards(inHand);
                 target = getHighScorePlayer();
                 int maxCard = max(remainingCards);
                 try {
@@ -122,6 +129,12 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform Priest action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @return the action the agent chooses to perform
+     * */
     public Action playPriestCard(Card c, Card inHand) {
         Action act = null;
         if(inHand == Card.PRIEST || c == Card.PRIEST) {
@@ -135,6 +148,14 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform Baron action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @param guess the known card of a player
+     * @param target the player whose card we know
+     * @return the action the agent chooses to perform
+     * */
     public Action playBaronCard(Card c, Card inHand, Card guess, int target) {
         Action act = null;
         if(inHand == Card.BARON || c == Card.BARON) {
@@ -189,6 +210,12 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform Handmaid action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @return the action the agent chooses to perform
+     * */
     public Action playHandmaidCard(Card c, Card inHand) {
         Action act = null;
         if(inHand == Card.HANDMAID || c == Card.HANDMAID) {
@@ -199,6 +226,14 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform Prince action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @param guess the known card of a player
+     * @param target the player whose card we know
+     * @return the action the agent chooses to perform
+     * */
     public Action playPrinceCard(Card c, Card inHand, Card guess, int target) {
         Action act = null;
         if(inHand == Card.PRINCE || c == Card.PRINCE) {
@@ -220,6 +255,12 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform King action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @return the action the agent chooses to perform
+     * */
     public Action playKingCard(Card c, Card inHand) {
         Action act = null;
         if(inHand == Card.KING || c == Card.KING) {
@@ -229,6 +270,12 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform Countess action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @return the action the agent chooses to perform
+     * */
     public Action playCountessCard(Card c, Card inHand) {
         Action act = null;
         if(inHand == Card.COUNTESS || c == Card.COUNTESS) {
@@ -241,6 +288,12 @@ public class BetterAgent implements Agent {
         return act;
     }
 
+    /**
+     * Perform a compulsory action
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand
+     * @return the compulsory action the agent chooses to perform
+     * */
     public Action playCompulsoryCard(Card c, Card inHand) {
         Action act = null;
         // If we have Prince or King and Countess, we must play Countess
@@ -259,8 +312,14 @@ public class BetterAgent implements Agent {
         return act;
     }
 
-    // makes careful random target choices, noTarget = the target we should not choose if possible otherwise
-    // choosing it may eliminate us
+    /**
+     * Makes careful random target choices
+     * @param c the card drawn from the deck
+     * @param play the card that will be played
+     * @param noTarget the player that must not be selected
+     * @return the action the agent chooses to perform
+     * @throws IllegalActionException when the Action produced is not legal.
+     * */
     public Action playRandom(Card c, Card play, int noTarget) {
         System.out.println("~~~~~~~ Random target selection ~~~~~~~");
         Action act = null;
@@ -320,9 +379,13 @@ public class BetterAgent implements Agent {
         return act;
     }
 
-    // get all the cards that have not been played, i.e. these cards must either be
-    // in the current deck or in other players' hands
-    public int[] getUnseenCards(Card c, Card inHand) {
+    /**
+     * Gets all the unseen cards from the current deck (includes the cards in
+     * other players' hands and cards from the current deck)
+     * @param inHand the card already in hand
+     * @return array containing the cards that have not been played
+     * */
+    public int[] getUnseenCards(Card inHand) {
         Card[] unseenCards = current.unseenCards();
         int[] remainingCards = new int[] {0, 0, 0, 0, 0, 0, 0, 0};
         
@@ -345,15 +408,18 @@ public class BetterAgent implements Agent {
                 remainingCards[7]++;
             }
         }
-        // subtract our drawn card and inHand card
-        // remainingCards[c.value()-1]--;
+        // subtract our inHand card
         remainingCards[inHand.value()-1]--;
 
         System.out.println("~~~~~~~ RemainingCards: " + Arrays.toString(remainingCards) + " ~~~~~~~");
         return remainingCards;
     }
 
-    // returns the index of an item with maximum value
+    /**
+     * Finds the index of maximum from an array
+     * @param a the array for which to find the index of maximum
+     * @return index of maximum integer
+     * */
     public int max(int[] a) {
         int max = -1;
 		int index = -1;
@@ -368,7 +434,10 @@ public class BetterAgent implements Agent {
         return index;
     }
 
-    // returns the index of the player with high score that is still in the round
+    /**
+     * Finds the player (that is still in the round) with the highest score
+     * @return index of the player with the highest score
+     * */
     public int getHighScorePlayer() {
         int index = -1;
         int num = current.numPlayers();
@@ -407,7 +476,10 @@ public class BetterAgent implements Agent {
         return index;
     }
 
-    // return the number of players left in the round
+    /**
+     * Finds the number of players left in the current round
+     * @return number of players left in the current round
+     * */
     public int playersLeft() {
         int players = 0;
         for(int i=0; i<current.numPlayers(); i++) {
