@@ -121,7 +121,7 @@ public class BetterAgent implements Agent {
                 target = getHighScorePlayer();
                 int maxCard = max(remainingCards);
                 try {
-                    System.out.println("~~~~~~~ Played Guard and chose high scoring trarget & guessed card from probability: target-"+target+" guess: "+Card.values()[maxCard].toString()+" ~~~~~~~");
+                    System.out.println("~~~~~~~ Played Guard (chose high scoring target & guessed card from probability) target: "+target+" guess: "+Card.values()[maxCard].toString()+" ~~~~~~~");
                     act = Action.playGuard(myIndex, target, Card.values()[maxCard]);
                 } catch(IllegalActionException e) {}
             }
@@ -326,30 +326,20 @@ public class BetterAgent implements Agent {
         while(!current.legalAction(act, c)) {
             int target = rand.nextInt(current.numPlayers());
             // choose a new target if current target is eliminated or protected by handmaid
-            int count = 1, forceTarget = 0;
             while(current.eliminated(target) || current.handmaid(target) || target == myIndex) {
+                System.out.println("~~~~~~~ New random: "+target+" first while loop ~~~~~~~");
                 target = rand.nextInt(current.numPlayers());
-                if(!current.eliminated(target) && target != myIndex) { // save the target which can be used if program stuck in while loop
-                    forceTarget = target;
-                }
-                if(count == 50) { // to stop the from being stuck in this while loop
-                    target = forceTarget;
+                // if all other players are protected by handmaid, then choose a target that is not elimitated
+                if(current.allHandmaid(myIndex) && !current.eliminated(target) && target != myIndex) {
                     break;
                 }
-                count++;
             }
-            count = 1;
             if(noTarget != -1) { // we can't choose noTarget
                 System.out.println("~~~~~~~ Can't choose noTarget: "+noTarget+" ~~~~~~~");
                 target = noTarget;
-                while(target == noTarget) { // hence choose another player
+                while(current.handmaid(target) || target == noTarget) { // hence choose another player
                     target = rand.nextInt(current.numPlayers());
                     System.out.println("~~~~~~~ New random: "+target+" ~~~~~~~");
-                    if(count == 50 && play == Card.BARON) { // to stop the program from being stuck in this while loop
-                        target = noTarget;
-                        break;
-                    }
-                    count++;
                 }
             }
             // if current card is Prince and all other players are protected by Handmaid
