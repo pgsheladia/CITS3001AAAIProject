@@ -15,7 +15,7 @@ public class LoveLetter{
   private PrintStream ps;
   // for testing purposes
   private static int[] playerWins = new int[4];
-  private static boolean testing = false;
+  private static boolean testing = true;
   private static int numRounds = 10000;
 
   /**
@@ -109,19 +109,19 @@ public class LoveLetter{
     // to run a larger test
     if(testing) {
       for(int i=0; i<numRounds; i++) {
-        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.BetterAgent(), new agents.BetterAgent()};
+        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.BetterAgent()};
         LoveLetter env = new LoveLetter();
         env.playGame(agents);
       }
       int totalWins = (playerWins[0] + playerWins[1] + playerWins[2] + playerWins[3]);
-      System.out.println("\tAgent 0, (Random):\t\t"+playerWins[0]+" out of "+totalWins);
-      System.out.println("\tAgent 1, (Random):\t\t"+playerWins[1]+" out of "+totalWins);
-      System.out.println("\tAgent 2, (Simple Reflex):\t"+playerWins[2]+" out of "+totalWins);
-      System.out.println("\tAgent 3, (Simple Reflex):\t"+playerWins[3]+" out of "+totalWins);
-      float randomTotal = (float) (playerWins[0] + playerWins[1]) / numRounds * 100;
-      System.out.println("Random win %:\t\t" + randomTotal);
-      float agentTotal = (float) (playerWins[2] + playerWins[3]) / numRounds * 100;
-      System.out.println("Simple Reflex win %:\t" + agentTotal);
+      System.out.println("\tAgent 0, (Random):\t"+playerWins[0]+" out of "+totalWins);
+      System.out.println("\tAgent 1, (Random):\t"+playerWins[1]+" out of "+totalWins);
+      System.out.println("\tAgent 2, (Random):\t"+playerWins[2]+" out of "+totalWins);
+      System.out.println("\tAgent 3, (Our):\t\t"+playerWins[3]+" out of "+totalWins);
+      float randomTotal = (float) (playerWins[0] + playerWins[1] + playerWins[2]) / numRounds * 100;
+      System.out.println("Random Agent win %:\t" + randomTotal);
+      float agentTotal = (float) (playerWins[3]) / numRounds * 100;
+      System.out.println("Our Agent win %:\t" + agentTotal);
     } else {
       Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.BetterAgent(), new agents.BetterAgent()};
       LoveLetter env = new LoveLetter();
