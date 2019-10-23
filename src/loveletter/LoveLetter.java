@@ -1,6 +1,8 @@
 package loveletter;
 import java.util.Random;
 import java.io.PrintStream;
+
+import agents.MCTSAgent;
 import agents.RandomAgent;
 
 /**
@@ -15,7 +17,7 @@ public class LoveLetter{
   private PrintStream ps;
   // for testing purposes
   private static int[] playerWins = new int[4];
-  private static boolean testing = true;
+  private static boolean testing = false;
   private static int numRounds = 10000;
 
   /**
@@ -123,7 +125,7 @@ public class LoveLetter{
       float agentTotal = (float) (playerWins[3]) / numRounds * 100;
       System.out.println("Our Agent win %:\t" + agentTotal);
     } else {
-      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.KnowledgeBasedAgent()};
+      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.MCTSAgent()};
       LoveLetter env = new LoveLetter();
       StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
       int[] results = env.playGame(agents);

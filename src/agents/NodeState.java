@@ -57,7 +57,10 @@ public class NodeState implements Cloneable {
      * **/
     public NodeState(NodeState nodeState) {
         this.player = nodeState.player;
-        this.num = nodeState.num;
+        this.num = 4;
+        try {
+            newRound();
+        } catch(IllegalActionException e) {/*unreachable code, do nothing*/}
         for(int i=0; i<num; i++) {
             this.discards[i] = nodeState.discards[i].clone();
         }
@@ -81,20 +84,21 @@ public class NodeState implements Cloneable {
      * @param state state to be copied to the new constructed NodeState
      * **/
     public NodeState(State state) {
+        this.player = state.getPlayerIndex();
         this.num = state.numPlayers();
+
+        // initialises the arrays
         try {
             newRound();
-        }catch(IllegalActionException e){/*unreachable code, do nothing*/}
-        this.player = state.getPlayerIndex();
+        } catch(IllegalActionException e) {/*unreachable code, do nothing*/}
+
+        // copies the scores, hand, known, handmaid and discards arrays
         scores = new int[num];
         int count = 0;
         for(int i=0; i<num; i++) {
             if(state.getCard(i) != null) {
                 this.hand[i] = state.getCard(i);
                 this.known[player][i] = true;
-            } else {
-                this.hand[i] = null;
-                this.known[player][i] = false;
             }
 
             this.handmaid[i] = state.handmaid(i);
@@ -105,14 +109,42 @@ public class NodeState implements Cloneable {
                 discards[i][count++] = (Card)iterator.next();
             }
             count = 0;
-
-            discardCount[i] = discards[i].length;
         }
-        this.deck = state.unseenCards();
-        this.top[0] = 16 - state.deckSize();
-        //random
+
+        // copies the discardCount array
+        for (int i = 0; i < discards.length; i++) {
+            for (int j = 0; j < discards[i].length; j++) {
+                if (this.discards[i][j] != null) {
+                    this.discardCount[i]++;
+                }
+            }
+        }
+
+        // copies the deck from the remaining cards
+        deck = new Card[16];
+        deck = Card.deal(new Random(0));
+        int topIndex = 16 - state.deckSize();
+        Card[] unseenCards = state.unseenCards();
+        count = 0;
+        for(int i=topIndex-1; i<16; i++) {
+            deck[i] = unseenCards[count];
+            count++;
+        }
+
+        // copies nextPlayer array
         nextPlayer = new int[1];
         this.nextPlayer[0] = state.nextPlayer();
+
+        // gets the top card index
+        count = 0;
+        while(deck[count] == null){
+            count++;
+        }
+        this.top[0] = count;
+
+        // makes up random agents
+        Agent[] agents = {new agents.MCTSAgent(),new agents.MCTSAgent(), new agents.MCTSAgent(), new agents.MCTSAgent()};
+        this.agents = agents;
     }
 
 
@@ -588,6 +620,7 @@ public class NodeState implements Cloneable {
         List<Action> possibleActions = this.getPossibleActions(c, inHand, myIndex);
 
         for(Action a : possibleActions) {
+            // for each possible Action, update their states accordingly
             NodeState newState = new NodeState(this);
             Card topCard = drawCard(); 
             newState.setPlayerNumber();
@@ -646,6 +679,7 @@ public class NodeState implements Cloneable {
                         } catch(IllegalActionException e){
                             continue;
                         }
+                        // only add legal actions to list otherwise continue
                         possibleActions.add(act);
                     }
                 }
@@ -659,7 +693,7 @@ public class NodeState implements Cloneable {
                     } catch(IllegalActionException e){
                         continue;
                     }
-                    possibleActions.add(act);
+                    possibleActions.add(act); // only add legal actions
                 }
             }
         } else if(inHand == Card.BARON || c == Card.BARON) {

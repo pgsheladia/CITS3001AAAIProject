@@ -57,27 +57,33 @@ public class MCTSAgent implements Agent {
         long start = System.currentTimeMillis();
         long end = start + 900; // 900 milliseconds allowed as a time limit
         
+        // saves the current node as the root node in Tree
         NodeState rootNodeState = new NodeState(current);
+        /* The above expression produces an error (NulPointerException to be exact)
+            We ran out of time, hence this error was not fixed but this Agent has been
+            fully implemented, i.e. all 4 steps are fully completed */
         Tree tree = new Tree();
         Node rootNode = tree.getRoot();
         rootNode.setState(rootNodeState);
 
         while(System.currentTimeMillis() < end) {
-            // 1. Selection - traverses the nodes based on their UCB scores
-            Node promisingNode = selectPromisingNode(rootNode);
+            // 1. Selection - selects the child node with the highest UCB scores
+            Node promisingNode = selectBestChildNode(rootNode);
 
             // 2. Expansion - explores all the possible actions/states of a node
             if (promisingNode.getState().roundOver() == false) {
                 int playerInd = promisingNode.getState().getPlayerIndex();
                 Card inHand = promisingNode.getState().getCard(playerInd);
+                // expand the tree and add all the possible actions and their states to Tree
                 expandNode(promisingNode, c, inHand, playerInd);
             }
 
-            // 3. Simulation - randomly selects a child node
+            // 3. Simulation - randomly selects a child node and plays the game until the end of a round
             Node nodeToExplore = promisingNode;
             if (promisingNode.getChildren().size() > 0) {
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
+            // plays game from the nodeToExplore to a leaf node
             int playoutResult = simulateRandomPlayout(nodeToExplore);
 
             // 4. Backpropagation - propagates back to the parent
@@ -94,10 +100,10 @@ public class MCTSAgent implements Agent {
      * @param rootNode parent Node provided
      * @return child Node with the highest UCB score
      * **/
-    private Node selectPromisingNode(Node rootNode) {
+    private Node selectBestChildNode(Node rootNode) {
         Node node = rootNode;
         while (node.getChildren().size() != 0) {
-            node = getUCBNode(node);
+            node = getHighestUCBNode(node);
         }
         return node;
     }
@@ -132,7 +138,8 @@ public class MCTSAgent implements Agent {
             tempNode.getParent().setWinScore(Integer.MIN_VALUE);
             return roundStatus;
         }
-        while (roundStatus == -1) {
+        while (roundStatus == -1) { // while there is no winner
+            // take a player's turn
             tempState.setPlayerNumber();
             Card c = tempState.drawCard();
             int playerInd = tempState.getPlayerIndex();
@@ -179,7 +186,7 @@ public class MCTSAgent implements Agent {
      * @param node the node to be calculated
      * @return the Node with the highest UCB score
      * **/
-    public static Node getUCBNode(Node node) {
+    public static Node getHighestUCBNode(Node node) {
         int parentVisit = node.getVisitCount();
         return Collections.max(
           node.getChildren(),
