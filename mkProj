@@ -1,13 +1,18 @@
 #simple buildscript for the project
-#compile all files
+
+#remove old compiled files
 echo 'removing old compiled files'
 rm -R bin/agents
 rm -R bin/loveletter
+
+#compile all files
 echo 'compiling files'
 javac -d bin src/*/*.java
+
 #run test
 echo 'running test'
 java -cp bin/ loveletter.LoveLetter
+
 #generate docs
 #echo 'generate docs'
 #javadoc -overview doc/overview.html -d doc/ src/*/*.java

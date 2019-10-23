@@ -15,10 +15,11 @@ public class LoveLetter{
   private Agent rando;
   private Random random;
   private PrintStream ps;
-  // for testing purposes
-  private static int[] playerWins = new int[4];
-  private static boolean testing = false;
-  private static int numRounds = 10000;
+
+  private static int[] playerWins = new int[4]; // for testing purposes
+  // change the following variable to 'true', if you want to run a larger test
+  private static boolean testing = false; // 'true' will silence all other print statements
+  private static int numRounds = 100000; // decides the number of games to execute
 
   /**
    * Constructs a LoveLetter game.
@@ -119,13 +120,13 @@ public class LoveLetter{
       System.out.println("\tAgent 0, (Random):\t"+playerWins[0]+" out of "+totalWins);
       System.out.println("\tAgent 1, (Random):\t"+playerWins[1]+" out of "+totalWins);
       System.out.println("\tAgent 2, (Random):\t"+playerWins[2]+" out of "+totalWins);
-      System.out.println("\tAgent 3, (Our):\t\t"+playerWins[3]+" out of "+totalWins);
+      System.out.println("\tAgent 3, (Knowledge Based):\t"+playerWins[3]+" out of "+totalWins);
       float randomTotal = (float) (playerWins[0] + playerWins[1] + playerWins[2]) / numRounds * 100;
-      System.out.println("Random Agent win %:\t" + randomTotal);
+      System.out.println("\nRandom Agent win %:\t\t" + randomTotal);
       float agentTotal = (float) (playerWins[3]) / numRounds * 100;
-      System.out.println("Our Agent win %:\t" + agentTotal);
+      System.out.println("Knowledge Based Agent win %:\t" + agentTotal);
     } else {
-      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.MCTSAgent()};
+      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.KnowledgeBasedAgent()};
       LoveLetter env = new LoveLetter();
       StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
       int[] results = env.playGame(agents);

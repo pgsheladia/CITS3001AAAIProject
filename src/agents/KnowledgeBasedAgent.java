@@ -21,7 +21,7 @@ public class KnowledgeBasedAgent implements Agent {
     /**
      * Reports the agents name
      * */
-    public String toString() {return "Better Agent";}
+    public String toString() {return "Knowledge Based Agent";}
 
     /**
      * Method called at the start of a round
