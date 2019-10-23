@@ -111,7 +111,6 @@ public class KnowledgeBasedAgent implements Agent {
         if(inHand == Card.GUARD || c == Card.GUARD) { // if we have a guard
             if(guess != null && guess != Card.GUARD) { // if we know their non-Guard card
                 try {
-                    // System.out.println("~~~~~~~ Played Guard bc we know a player's card: target-"+target+" guess: "+guess.toString()+" ~~~~~~~");
                     act = Action.playGuard(myIndex, target, guess);
                 } catch(IllegalActionException e) {}
             } else {
@@ -121,7 +120,6 @@ public class KnowledgeBasedAgent implements Agent {
                 target = getHighScorePlayer();
                 int maxCard = max(remainingCards);
                 try {
-                    // System.out.println("~~~~~~~ Played Guard (chose high scoring target & guessed card from probability) target: "+target+" guess: "+Card.values()[maxCard].toString()+" ~~~~~~~");
                     act = Action.playGuard(myIndex, target, Card.values()[maxCard]);
                 } catch(IllegalActionException e) {}
             }
@@ -141,7 +139,6 @@ public class KnowledgeBasedAgent implements Agent {
             // choose the player with the highest score
             int target = getHighScorePlayer();
             try {
-                // System.out.println("~~~~~~~ Played Priest and chose high scoring target: target-"+target+" ~~~~~~~");
                 act = Action.playPriest(myIndex, target);
             } catch(IllegalActionException e) {}
         }
@@ -162,17 +159,14 @@ public class KnowledgeBasedAgent implements Agent {
             if(guess != null) { // if we know a card
                 if(inHand == Card.BARON && guess.value() < c.value()) { // if known card has smaller value than our card
                     try {
-                        // System.out.println("~~~~~~~ Played Baron and chose target with already known low score card: target-"+target+" ~~~~~~~");
                         act = Action.playBaron(myIndex, target);
                     } catch(IllegalActionException e) {}
                 } else if(c == Card.BARON && guess.value() < inHand.value()) {
                     try {
-                        // System.out.println("~~~~~~~ Played Baron and chose target with already known low score card: target-"+target+" ~~~~~~~");
                         act = Action.playBaron(myIndex, target);
                     } catch(IllegalActionException e) {}
                 } else { // the known card has higher value
                     if(playersLeft() == 2) { // one other player, therefore play the other card if possible
-                        // System.out.println("~~~~~~~ One other player left, playing card other than Baron ~~~~~~~");
                         act = playGuardCard(c, inHand, guess, target);
                         if(act != null) {
                             return act;
@@ -199,11 +193,9 @@ public class KnowledgeBasedAgent implements Agent {
                         }
                         // else we lose the round either way as the other card must be Princess or Baron
                     }
-                    // System.out.println("~~~~~~~ Played Baron, target a random person ~~~~~~~");
                     act = playRandom(c, Card.values()[2], -1);
                 }
             } else {
-                // System.out.println("~~~~~~~ Played Baron, target a random person ~~~~~~~");
                 act = playRandom(c, Card.values()[2], -1);
             }
         }
@@ -239,15 +231,12 @@ public class KnowledgeBasedAgent implements Agent {
         if(inHand == Card.PRINCE || c == Card.PRINCE) {
             if(guess != null && guess == Card.PRINCESS) { // if we know that a player has a princess
                 try {
-                    // System.out.println("~~~~~~~ Played Prince and chose target with already known Princess card: target-"+target+" ~~~~~~~");
                     act = Action.playPrince(myIndex, target); // we can eliminate them
                 } catch(IllegalActionException e) {}
             } else {
                 if(inHand == Card.PRINCESS || c == Card.PRINCESS) { // if we also have a Princess
-                    // System.out.println("~~~~~~~ Played Prince, Princess also in hand, so dont target ourselves ~~~~~~~");
                     act = playRandom(c, Card.values()[4], myIndex); // don't target ourselves
                 } else {
-                    // System.out.println("~~~~~~~ Played Prince, target a random person ~~~~~~~");
                     act = playRandom(c, Card.values()[4], -1);
                 }
             }
@@ -264,7 +253,6 @@ public class KnowledgeBasedAgent implements Agent {
     public Action playKingCard(Card c, Card inHand) {
         Action act = null;
         if(inHand == Card.KING || c == Card.KING) {
-            // System.out.println("~~~~~~~ Played King, target a random person ~~~~~~~");
             act = playRandom(c, Card.values()[5], -1);
         }
         return act;
@@ -281,7 +269,6 @@ public class KnowledgeBasedAgent implements Agent {
         if(inHand == Card.COUNTESS || c == Card.COUNTESS) {
             // if the programs gets to this statement, we have to play Countess as the other card must be Princess
             try {
-                // System.out.println("~~~~~~~ Played Countess bc the other card is Princess ~~~~~~~");
                 act = Action.playCountess(myIndex);
             } catch(IllegalActionException e) {}
         }
@@ -299,13 +286,11 @@ public class KnowledgeBasedAgent implements Agent {
         // If we have Prince or King and Countess, we must play Countess
         if((inHand == Card.PRINCE || inHand == Card.KING) && c == Card.COUNTESS) {
             try {
-                // System.out.println("~~~~~~~ Played Countess (bc Prince or King also in hand) ~~~~~~~");
                 act = Action.playCountess(myIndex);
             } catch(IllegalActionException e) {}
         }
         else if((c == Card.PRINCE || c == Card.KING) && inHand == Card.COUNTESS) {
             try {
-                // System.out.println("~~~~~~~ Played Countess (bc Prince or King also in hand) ~~~~~~~");
                 act = Action.playCountess(myIndex);
             } catch(IllegalActionException e) {}
         }
@@ -321,13 +306,11 @@ public class KnowledgeBasedAgent implements Agent {
      * @throws IllegalActionException when the Action produced is not legal.
      * */
     public Action playRandom(Card c, Card play, int noTarget) {
-        // System.out.println("~~~~~~~ Random target selection ~~~~~~~");
         Action act = null;
         while(!current.legalAction(act, c)) {
             int target = rand.nextInt(current.numPlayers());
             // choose a new target if current target is eliminated or protected by handmaid
             while(current.eliminated(target) || current.handmaid(target) || target == myIndex) {
-                // System.out.println("~~~~~~~ New random: "+target+" first while loop ~~~~~~~");
                 target = rand.nextInt(current.numPlayers());
                 // if all other players are protected by handmaid, then choose a target that is not elimitated
                 if(current.allHandmaid(myIndex) && !current.eliminated(target) && target != myIndex) {
@@ -335,20 +318,15 @@ public class KnowledgeBasedAgent implements Agent {
                 }
             }
             if(noTarget != -1) { // we can't choose noTarget
-                // System.out.println("~~~~~~~ Can't choose noTarget: "+noTarget+" ~~~~~~~");
                 target = noTarget;
                 while(current.handmaid(target) || target == noTarget) { // hence choose another player
                     target = rand.nextInt(current.numPlayers());
-                    // System.out.println("~~~~~~~ New random: "+target+" ~~~~~~~");
                 }
             }
             // if current card is Prince and all other players are protected by Handmaid
             if(play == Card.PRINCE && current.allHandmaid(myIndex)) {
-                // System.out.println("~~~~~~~ Prince & all other protected > targeted ourself-"+myIndex+"  ~~~~~~~");
                 target = myIndex; // we must choose ourself
             }
-
-            // System.out.println("~~~~~~~ Random target: "+target+" ~~~~~~~");
 
             try {
                 switch(play) {
@@ -401,7 +379,6 @@ public class KnowledgeBasedAgent implements Agent {
         // subtract our inHand card
         remainingCards[inHand.value()-1]--;
 
-        // System.out.println("~~~~~~~ RemainingCards: " + Arrays.toString(remainingCards) + " ~~~~~~~");
         return remainingCards;
     }
 
@@ -444,7 +421,6 @@ public class KnowledgeBasedAgent implements Agent {
                 return Integer.compare(b[1], a[1]);
             }
         });
-        // System.out.println("~~~~~~~ 2D array: "+Arrays.deepToString(scores)+" ~~~~~~~");
 
         for(int i=0; i<num; i++) {
             // check if the player is not protected by Handmaid and they're still in the round
@@ -462,7 +438,6 @@ public class KnowledgeBasedAgent implements Agent {
             }
         }
 
-        // System.out.println("~~~~~~~ High score player: "+index+" ~~~~~~~");
         return index;
     }
 

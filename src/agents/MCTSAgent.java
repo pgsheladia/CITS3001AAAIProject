@@ -171,7 +171,7 @@ public class MCTSAgent implements Agent {
         if (nodeVisit == 0) {
             return Integer.MAX_VALUE;
         }
-        return (nodeWinScore / (double) nodeVisit) + 1.41 * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
+        return (nodeWinScore / (double) nodeVisit) + 0.7 * Math.sqrt(Math.log(totalVisit) / (double) nodeVisit);
     }
 
     /**
