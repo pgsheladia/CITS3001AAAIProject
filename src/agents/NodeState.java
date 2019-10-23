@@ -5,12 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 
-// import com.baeldung.algorithms.mcts.tictactoe.Board;
-// import com.baeldung.algorithms.mcts.tictactoe.Position;
 
 /**
  * This class is implemented on top of the State class from the loveletter package
- * Most of the functions in this class are copied from there
+ * Also, the following references were used:
+ * https://github.com/eugenp/tutorials/blob/master/algorithms-miscellaneous-1/src/main/java/com/baeldung/algorithms/mcts/montecarlo/State.java
  * **/
 public class NodeState implements Cloneable {
     
@@ -76,7 +75,6 @@ public class NodeState implements Cloneable {
         this.agents = nodeState.agents.clone();
     }
 
-    // this constructor copies all the fields that it can read from the original state
     /**
      * Constructs a NodeState for a player from the State supplied, i.e. it tries to
      * copy all the publically available fields to the custom NodeState
@@ -124,7 +122,6 @@ public class NodeState implements Cloneable {
      * @throws IllegalActionException if this is a player state.
      * **/
     public void newRound() throws IllegalActionException{
-        // if(this.player!=-1) throw new IllegalActionException("Operation not permitted in player's state.");
         deck = Card.deal(new Random(0));
         discards = new Card[num][16];
         discardCount = new int[num];
@@ -224,7 +221,6 @@ public class NodeState implements Cloneable {
      * @throws IllegalActionException if an agent attempts to access this from a player state.
      * **/
     public Card drawCard() {
-        // if(player!=-1) throw new IllegalActionException("operation not permitted in player's state.");
         return deck[top[0]++];
     }
 
@@ -575,7 +571,7 @@ public class NodeState implements Cloneable {
     /**
      * Sets the player number as the next player
      * **/
-    void setPlayerNo() {
+    void setPlayerNumber() {
         this.player = nextPlayer();
     }
 
@@ -591,11 +587,10 @@ public class NodeState implements Cloneable {
         List<NodeState> possibleStates = new ArrayList<>();
         List<Action> possibleActions = this.getPossibleActions(c, inHand, myIndex);
 
-        // possibleActions.forEach(p -> {
         for(Action a : possibleActions) {
             NodeState newState = new NodeState(this);
             Card topCard = drawCard(); 
-            newState.setPlayerNo();
+            newState.setPlayerNumber();
             newState.setAction(a);
             try{
                 newState.update(a, topCard);

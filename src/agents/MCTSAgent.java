@@ -7,23 +7,21 @@ import java.util.Comparator;
 
 
 /**
- * An agent which user Monte Carlo Tree Search to
- * An interface for representing an agent in the game Love Letter
- * All agent's must have a 0 parameter constructor
+ * An agent which uses Monte Carlo Tree Search to find the best possible move.
+ * The following references were used:
+ * https://www.baeldung.com/java-monte-carlo-tree-search
+ * https://github.com/eugenp/tutorials/blob/master/algorithms-miscellaneous-1/src/main/java/com/baeldung/algorithms/mcts/montecarlo/MonteCarloTreeSearch.java
  * */
 public class MCTSAgent implements Agent {
 
     private Random rand;
     private State current;
     private int myIndex;
-    private static final int WIN_SCORE = 10;
-    private int level;
 
 
     //0 place default constructor
     public MCTSAgent() {
         rand = new Random();
-        this.level = 3;
     }
 
     /**
@@ -57,7 +55,7 @@ public class MCTSAgent implements Agent {
      * */
     public Action playCard(Card c) {
         long start = System.currentTimeMillis();
-        long end = start + 60 * (2 * (this.level - 1) + 1);
+        long end = start + 900; // 900 milliseconds allowed as a time limit
         
         NodeState rootNodeState = new NodeState(current);
         Tree tree = new Tree();
@@ -65,24 +63,24 @@ public class MCTSAgent implements Agent {
         rootNode.setState(rootNodeState);
 
         while(System.currentTimeMillis() < end) {
-            // 1. Selection
+            // 1. Selection - traverses the nodes based on their UCB scores
             Node promisingNode = selectPromisingNode(rootNode);
 
-            // 2. Expansion
+            // 2. Expansion - explores all the possible actions/states of a node
             if (promisingNode.getState().roundOver() == false) {
                 int playerInd = promisingNode.getState().getPlayerIndex();
                 Card inHand = promisingNode.getState().getCard(playerInd);
                 expandNode(promisingNode, c, inHand, playerInd);
             }
 
-            // 3. Simulation
+            // 3. Simulation - randomly selects a child node
             Node nodeToExplore = promisingNode;
             if (promisingNode.getChildren().size() > 0) {
                 nodeToExplore = promisingNode.getRandomChildNode();
             }
             int playoutResult = simulateRandomPlayout(nodeToExplore);
 
-            // 4. Backpropagation
+            // 4. Backpropagation - propagates back to the parent
             backPropogation(nodeToExplore, playoutResult);
         }
 
@@ -91,6 +89,11 @@ public class MCTSAgent implements Agent {
         return winnerNode.getState().getAction();
     }
 
+    /**
+     * Selects a child Node with the highest UCB score from a parent node
+     * @param rootNode parent Node provided
+     * @return child Node with the highest UCB score
+     * **/
     private Node selectPromisingNode(Node rootNode) {
         Node node = rootNode;
         while (node.getChildren().size() != 0) {
@@ -99,6 +102,13 @@ public class MCTSAgent implements Agent {
         return node;
     }
 
+    /**
+     * Expands the selected node
+     * @param node Node to be expanded
+     * @param c the card drawn from the deck
+     * @param inHand the card already in hand of a player
+     * @param playerInd the index of a player
+     * **/
     private void expandNode(Node node, Card c, Card inHand, int playerInd) {
         List<NodeState> possibleStates = node.getState().getAllPossibleStates(c, inHand, playerInd);
         possibleStates.forEach(state -> {
@@ -108,6 +118,11 @@ public class MCTSAgent implements Agent {
         });
     }
 
+    /**
+     * Simulates the selected random node
+     * @param node Node that is selected for the random playout
+     * @return the winner of the round
+     * **/
     private int simulateRandomPlayout(Node node) {
         Node tempNode = new Node(node);
         NodeState tempState = tempNode.getState();
@@ -118,7 +133,7 @@ public class MCTSAgent implements Agent {
             return roundStatus;
         }
         while (roundStatus == -1) {
-            tempState.setPlayerNo();
+            tempState.setPlayerNumber();
             Card c = tempState.drawCard();
             int playerInd = tempState.getPlayerIndex();
             Card inHand = tempState.getCard(playerInd);
@@ -129,12 +144,18 @@ public class MCTSAgent implements Agent {
         return roundStatus;
     }
 
+    /**
+     * Backpropagate from a node to the root node and increments the visit score and
+     * the total score for each node in the path.
+     * @param nodeToExplore Node from which to start propagating
+     * @param playerNo player who is performing the action
+     * **/
     private void backPropogation(Node nodeToExplore, int playerNo) {
         Node tempNode = nodeToExplore;
         while (tempNode != null) {
             tempNode.incrementVisit();
             if (tempNode.getState().getPlayerIndex() == playerNo)
-                tempNode.addScore(WIN_SCORE);
+                tempNode.addScore(10);
             tempNode = tempNode.getParent();
         }
     }

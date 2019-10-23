@@ -109,7 +109,7 @@ public class LoveLetter{
     // to run a larger test
     if(testing) {
       for(int i=0; i<numRounds; i++) {
-        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.BetterAgent()};
+        Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.KnowledgeBasedAgent()};
         LoveLetter env = new LoveLetter();
         env.playGame(agents);
       }
@@ -123,7 +123,7 @@ public class LoveLetter{
       float agentTotal = (float) (playerWins[3]) / numRounds * 100;
       System.out.println("Our Agent win %:\t" + agentTotal);
     } else {
-      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.BetterAgent(), new agents.BetterAgent()};
+      Agent[] agents = {new agents.RandomAgent(),new agents.RandomAgent(), new agents.RandomAgent(), new agents.KnowledgeBasedAgent()};
       LoveLetter env = new LoveLetter();
       StringBuffer log = new StringBuffer("A simple game for four random agents:\n");
       int[] results = env.playGame(agents);

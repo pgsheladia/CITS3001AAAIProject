@@ -7,14 +7,14 @@ import java.util.Random;
  * An interface for representing an agent in the game Love Letter
  * All agent's must have a 0 parameter constructor
  * */
-public class BetterAgent implements Agent {
+public class KnowledgeBasedAgent implements Agent {
 
     private Random rand;
     private State current;
     private int myIndex;
 
     //0 place default constructor
-    public BetterAgent() {
+    public KnowledgeBasedAgent() {
         rand = new Random();
     }
 

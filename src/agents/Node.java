@@ -8,6 +8,8 @@ import java.util.Random;
 
 /**
  * A class representing a Node in a Tree for Monte Carlo Tree Search (MCTS) Agent
+ * This class is a modified version from the following reference:
+ * https://github.com/eugenp/tutorials/blob/master/algorithms-miscellaneous-1/src/main/java/com/baeldung/algorithms/mcts/tree/Node.java
  * */
 public class Node {
     private NodeState nodeState;

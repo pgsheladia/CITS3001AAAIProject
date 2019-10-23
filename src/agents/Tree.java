@@ -2,6 +2,8 @@ package agents;
 
 /**
  * A class representing a Tree for Monte Carlo Tree Search (MCTS) Agent
+ * This class is a modified version of the class from the following reference:
+ * https://github.com/eugenp/tutorials/blob/master/algorithms-miscellaneous-1/src/main/java/com/baeldung/algorithms/mcts/tree/Tree.java
  * */
 public class Tree {
     Node root; // the root node
