@@ -1,0 +1,11 @@
+- To compile the files and run the program, simply run the mkProj script
+	it can be ran with the command: ./mkProj
+
+- The above command firstly removes old compiled files, then compiles the program and also runs it
+
+- In the LoveLetter.java file, which is in the 'loveletter' directory
+	- There is a global boolean variable named 'testing', change this to true, if you want to run a large test
+	- There is also a global int variable named 'numRounds', which decides the number of games to execute, currently it is set to 100,000
+	- During testing, all print statements are silenced
+	- In the main function, at the bottom, the positions of the RandomAgent and our agent (KnowledgeBasedAgent) can be changed to find win rates at different positions
+		NOTE: If changing the position of the agents, then to print the correct calculation, you will also need to change the playerWins indexes on line 124 and 126
